@@ -75,34 +75,5 @@ def main():
                     w_main.bring_to_front()
 
 
-        # # w_phone_statistics
-        # if window == w_phone_statistics:
-        #     if event == 'Voltar':
-        #         w_phone_statistics.hide()
-        #         w_phone_book_initial = window_phone_book_initial()
-
-        # # w_add_contact
-        # if window == w_add_contact:
-        #     if event == 'Adicionar':
-        #         w_add_contact.close()
-        #
-        #         name = values[0]
-        #         telephone = values[1]
-        #         print(name, telephone)
-        #         write_file(load_file(), name, telephone)
-        #
-        #         w_phone_list.FindElement('values_list').Update(read_file(load_file()))
-        #
-        #     elif event == 'Voltar':
-        #         w_phone_book_initial.hide()
-        #         w_phone_list = window_phone_list()
-        #
-
 if __name__ == '__main__':
-    # name = 'Gustavo Eduardo Silva Machado'
-    # phone = '34991077043'
-    # sex = 'Masculino'
-    # address = 'Rua Pádua e Castro, 166'
-    # city = 'Campinas'
-    # state = 'São Paulo'
     main()

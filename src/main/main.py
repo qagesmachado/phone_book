@@ -1,9 +1,12 @@
+# encoding: utf-8
 import PySimpleGUI as sg
+
+from backend.contact_statistics import collect_statistics
 from frontend.popups.popup_errors import popup_error_101, popup_error_102, popup_to_do
 from frontend.popups.popup_success import popup_success_add_contact
 from frontend.window_main import main_layout
 from frontend.window_book_list import window_add_contact
-from backend.files import write_file, load_file, read_file, get_contact_list_info, check_contact, strip_string
+from backend.files import write_file, path_file, get_name_in_file, get_contact_list_info, check_contact, strip_string
 
 
 def main():
@@ -37,7 +40,7 @@ def main():
             elif event == 'btn_delete_all':
                 popup_to_do(values)
             elif event == 'li_values':
-                if len(read_file(load_file())) > 0:
+                if len(get_name_in_file(path_file())) > 0:
                     element_list = values['li_values'][0]
                     name, telephone, celphone, sex, address, address_number, address_quarter, city, state = get_contact_list_info(element_list)
 
@@ -72,13 +75,23 @@ def main():
                         state = strip_string(values['contact_state'])
                         if values['sex_male']:
                             sex = 'Masculino'
-                        else:
+                        elif values['sex_female']:
                             sex = 'Feminino'
+                        elif values['sex_none']:
+                            sex = 'Nao definido'
 
                         # print(values)
 
-                        write_file(load_file(), name, telephone, celphone, sex, address, address_number, address_quarter, city, state)
-                        w_main.FindElement('li_values').Update(read_file(load_file()))
+                        write_file(path_file(), name, telephone, celphone, sex, address, address_number, address_quarter, city, state)
+                        w_main.FindElement('li_values').Update(get_name_in_file(path_file()))
+
+                        # update statistics
+                        list_len, m, f, n = collect_statistics()
+                        w_main.FindElement('qtd_total').Update(list_len)
+                        w_main.FindElement('qtd_men').Update(m)
+                        w_main.FindElement('qtd_women').Update(f)
+                        w_main.FindElement('qtd_none').Update(n)
+
                         popup_success_add_contact(values)
                         w_add_contact.close()
                         w_main.enable()

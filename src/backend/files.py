@@ -1,8 +1,11 @@
+# encoding: utf-8
 import pandas as pd
 from backend.operation_system import get_root_path
 import csv
 from re import search
 import string
+
+encondig = "utf-8"
 
 
 def write_file(file, name, telephone, celphone, sex, address, address_number, address_quarter, city, state):
@@ -12,7 +15,7 @@ def write_file(file, name, telephone, celphone, sex, address, address_number, ad
     file_append.close()
 
 
-def load_file():
+def path_file():
     path = get_root_path()
     file = path + "/data/phone_book_list.txt"
     # file = path + "/src/data/phone_book_list.txt"
@@ -20,49 +23,79 @@ def load_file():
     return file
 
 
-def read_file(file):
+def get_name_in_file(file):
     contact_list = []
-    telephone_list = []
-
-    with open(file, mode='r', encoding='utf8') as csv_file:
+    with open(file, mode='r', encoding=encondig) as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
+        print(f'Names loaded:')
         for row in csv_reader:
-            # print(f'\t{row["Nome"]} - {row["Telefone"]}')
+            print(f'{row["Nome"]}')
             line_count += 1
             contact_list.append(row["Nome"])
-            telephone_list.append(row["Telefone"])
+    csv_file.close()
+    print(f'Processed {line_count} lines.')
+    contact_list.sort()
 
-        # print(f'Processed {line_count} lines.')
-        contact_list.sort()
-        return contact_list
+    return contact_list
 
 
 def get_contact_list_info(element):
-    file = load_file()
+    file = path_file()
     if len(file) > 0:
-        with open(file, mode='r', encoding='utf8') as csv_file:
+        with open(file, mode='r', encoding=encondig) as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 if row["Nome"] == element:
-                    print("Contato encontrado na lista - > Será mostrado as infos")
+                    print(f'Contato encontrado na lista - > Será mostrado as infos --> {row["Nome"]}')
                     name = row["Nome"]
                     telephone = row["Telefone"]
                     celphone = row["Celular"]
                     sex = row["Sexo"]
                     address = row["Logradouro"]
-                    address_number = row["Número"]
+                    address_number = row["Numero"]
                     address_quarter = row["Bairro"]
                     city = row["Cidade"]
                     state = row["Estado"]
-            return name, telephone, celphone, sex, address, address_number, address_quarter, city, state
+        csv_file.close()
+        return name, telephone, celphone, sex, address, address_number, address_quarter, city, state
+
+
+def get_all_contact_list_info():
+    name_list = []
+    phone_list = []
+    celphone_list = []
+    sex_list = []
+    address_list = []
+    address_number_list = []
+    address_quarter_list = []
+    city_list = []
+    state_list = []
+
+    file = path_file()
+    if len(file) > 0:
+        with open(file, mode='r', encoding=encondig) as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                name_list.append(row["Nome"])
+                phone_list.append(row["Telefone"])
+                celphone_list.append(row["Celular"])
+                sex_list.append(row["Sexo"])
+                address_list.append(row["Logradouro"])
+                address_number_list.append(row["Numero"])
+                address_quarter_list.append(row["Bairro"])
+                city_list.append(row["Cidade"])
+                state_list.append(row["Estado"])
+
+        csv_file.close()
+        return name_list, phone_list, celphone_list, sex_list, address_list, address_number_list, address_quarter_list, city_list, state_list
 
 
 def check_contact(name):
     print(name)
     name = strip_string(name)
-    file = load_file()
-    with open(file, mode='r', encoding='utf8') as csv_file:
+    file = path_file()
+    with open(file, mode='r', encoding=encondig) as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
             if row["Nome"] == name:
@@ -70,7 +103,8 @@ def check_contact(name):
                 return 101
         if name == '':
             return 102
-        return 200
+    csv_file.close()
+    return 200
 
 
 def strip_string(x):
@@ -86,4 +120,4 @@ def strip_string(x):
 
 
 if __name__ == '__main__':
-    write_file(load_file(), 'Giovani', 123645)
+    write_file(path_file(), 'Giovani', 123645)

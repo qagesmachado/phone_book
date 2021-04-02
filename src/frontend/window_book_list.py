@@ -122,6 +122,12 @@ def window_add_contact():
                   font=(frontend.setup.font, frontend.setup.font_size_text_name),
                   pad=((1, 1), (1, 2)),
                   background_color=frontend.setup.color_light),
+         sg.Radio('Não Definido',
+                  group_id='sex',
+                  key='sex_none',
+                  font=(frontend.setup.font, frontend.setup.font_size_text_name),
+                  pad=((1, 1), (1, 2)),
+                  background_color=frontend.setup.color_light),
          ],
         # Linha 5 - Endereço e numero
         [sg.Text('Logradouro  ',

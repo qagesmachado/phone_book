@@ -1,7 +1,8 @@
 import PySimpleGUI as sg
 import frontend.setup
 from backend import operation_system
-from backend.files import load_file, read_file
+from backend.contact_statistics import collect_statistics
+from backend.files import path_file, get_name_in_file
 from frontend.window_book_list import window_book_list
 from frontend.window_info import window_info
 from frontend.window_logo import window_logo
@@ -11,15 +12,19 @@ from frontend.window_title import window_title
 
 
 def main_layout():
+    # theme
     sg.theme(frontend.setup.window_theme)
-    values = read_file(load_file())
+
+    # load data
+    values = get_name_in_file(path_file())
+    list_len, m, f, n = collect_statistics()
 
     layout_title = window_title()
     layout_list = window_book_list(values)
     layout_logo = window_logo()
     layout_info = window_info()
     layout_show = window_show()
-    layout_statistics = window_statistics()
+    layout_statistics = window_statistics(list_len, m, f, n)
 
     col1 = [
         [sg.Column(layout_logo, background_color=frontend.setup.color_light, size=(140, 140), justification='top'), sg.Column(layout_show, background_color=frontend.setup.color_light, size=(300, 140))],

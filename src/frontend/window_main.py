@@ -10,7 +10,6 @@ from frontend.window_statistics import window_statistics
 from frontend.window_title import window_title
 
 
-
 def main_layout():
     sg.theme(frontend.setup.window_theme)
     values = read_file(load_file())
@@ -36,34 +35,5 @@ def main_layout():
     return sg.Window('Lista de Contatos', layout=layout_main, finalize=True, size=(970, 560), background_color=frontend.setup.color_medium).Finalize()
 
 
-# Use only to unit test
-def unit_test():
-
-    # Criar as janelas inicias
-    w_main = main_layout()
-
-    while True:
-        window, event, values = sg.read_all_windows()
-
-
-
-        # # Quando janela for fechada
-        if window == w_main and event == sg.WIN_CLOSED:
-            break
-        if event == 'btn_delete':
-            w_main.FindElement('contact_name').Update(name)
-            w_main.FindElement('contact_phone').Update(phone)
-            w_main.FindElement('contact_sex').Update(sex)
-            w_main.FindElement('contact_address').Update(address)
-            w_main.FindElement('contact_city').Update(city)
-            w_main.FindElement('contact_state').Update(state)
-
-
 if __name__ == '__main__':
-    name = 'Gustavo Eduardo Silva Machado'
-    phone = '34991077043'
-    sex = 'Masculino'
-    address = 'Rua Pádua e Castro, 166'
-    city = 'Campinas'
-    state = 'São Paulo'
-    unit_test()
+    pass

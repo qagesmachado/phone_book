@@ -1,13 +1,15 @@
 import PySimpleGUI as sg
+from frontend.popups.popup_errors import popup_error_101, popup_error_102, popup_to_do
+from frontend.popups.popup_success import popup_success_add_contact
 from frontend.window_main import main_layout
 from frontend.window_book_list import window_add_contact
-from backend.files import write_file, load_file, read_file, get_contact_list_info
+from backend.files import write_file, load_file, read_file, get_contact_list_info, check_contact, strip_string
 
 
 def main():
 
     # Criar as janelas inicias
-    w_main, w_add_contact = main_layout(), None
+    w_main, w_add_contact, popup_101 = main_layout(), None, None
 
     while True:
         window, event, values = sg.read_all_windows()
@@ -22,16 +24,18 @@ def main():
 
         if window == w_main:
             if event == 'btn_search':
-                pass
+                popup_to_do(values)
             elif event == 'btn_reset':
-                pass
+                popup_to_do(values)
             elif event == 'btn_add':
                 w_add_contact = window_add_contact()
                 w_main.disable()
+            elif event == 'btn_edit':
+                popup_to_do(values)
             elif event == 'btn_delete':
-                pass
+                popup_to_do(values)
             elif event == 'btn_delete_all':
-                pass
+                popup_to_do(values)
             elif event == 'li_values':
                 if len(read_file(load_file())) > 0:
                     element_list = values['li_values'][0]
@@ -46,29 +50,45 @@ def main():
                     w_main.FindElement('contact_address_quarter').Update(address_quarter)
                     w_main.FindElement('contact_city').Update(city)
                     w_main.FindElement('contact_state').Update(state)
+
         if window == w_add_contact:
             if window == w_add_contact:
                 if event == 'btn_add':
-                    w_add_contact.close()
-                    w_main.enable()
-                    w_main.bring_to_front()
-
-                    print(values)
-
                     name = values['contact_name']
-                    telephone = values['contact_phone']
-                    celphone = values['contact_celphone']
-                    sex = values['contact_sex']
-                    address = values['contact_address']
-                    address_number = values['contact_address_number']
-                    address_quarter = values['contact_address_quarter']
-                    city = values['contact_city']
-                    state = values['contact_state']
-                    print(name, telephone, celphone, sex, address, address_number, address_quarter, city, state)
-                    write_file(load_file(), name, telephone, celphone, sex, address, address_number, address_quarter, city, state)
 
-                    w_main.FindElement('li_values').Update(read_file(load_file()))
+                    validation = check_contact(name)
 
+                    if validation == 200:
+                        # print("Entrada válida")
+
+                        # Tratamento dos inputs
+                        name = strip_string(values['contact_name'])
+                        telephone = strip_string(values['contact_phone'])
+                        celphone = strip_string(values['contact_celphone'])
+                        address = strip_string(values['contact_address'])
+                        address_number = strip_string(values['contact_address_number'])
+                        address_quarter = strip_string(values['contact_address_quarter'])
+                        city = strip_string(values['contact_city'])
+                        state = strip_string(values['contact_state'])
+                        if values['sex_male']:
+                            sex = 'Masculino'
+                        else:
+                            sex = 'Feminino'
+
+                        # print(values)
+
+                        write_file(load_file(), name, telephone, celphone, sex, address, address_number, address_quarter, city, state)
+                        w_main.FindElement('li_values').Update(read_file(load_file()))
+                        popup_success_add_contact(values)
+                        w_add_contact.close()
+                        w_main.enable()
+                        w_main.bring_to_front()
+                    elif validation == 101:
+                        print('[ERRO 101] Já tem um contato com esse nome')
+                        popup_error_101(values)
+                    elif validation == 102:
+                        print("[ERRO 202] Contato não pode ser vazio")
+                        popup_error_102(values)
                 elif event == 'btn_return':
                     w_add_contact.close()
                     w_main.enable()

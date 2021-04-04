@@ -2,15 +2,16 @@
 import PySimpleGUI as sg
 
 from backend.contact_statistics import collect_statistics
-from frontend.popups.popup_errors import popup_error_101, popup_error_102, popup_to_do
+from frontend.popups.popup_errors import popup_error_101, popup_error_102, popup_to_do, popup_error_103
+from frontend.popups.popup_question import popup_question_delete_contact
 from frontend.popups.popup_success import popup_success_add_contact
 from frontend.window_main import main_layout
 from frontend.window_book_list import window_add_contact
-from backend.files import write_file, path_file, get_name_in_file, get_contact_list_info, check_contact, strip_string
+from backend.files import write_file, path_file, get_name_in_file, get_contact_list_info, check_contact, strip_string, \
+    delete_one_element_list, read_lines
 
 
 def main():
-
     # Criar as janelas inicias
     w_main, w_add_contact, popup_101 = main_layout(), None, None
 
@@ -27,22 +28,64 @@ def main():
 
         if window == w_main:
             if event == 'btn_search':
-                popup_to_do(values)
+                if len(values['in_search']) == 0:
+                    w_main.FindElement('li_values').Update(get_name_in_file(path_file()))
+                else:
+                    popup_to_do(values)
             elif event == 'btn_reset':
                 popup_to_do(values)
             elif event == 'btn_add':
                 w_add_contact = window_add_contact()
                 w_main.disable()
             elif event == 'btn_edit':
-                popup_to_do(values)
+                # popup_to_do(values)
+                read_lines()
             elif event == 'btn_delete':
-                popup_to_do(values)
+                try:
+                    element_list = values['li_values'][0]
+                    pop_up_result = popup_question_delete_contact(element_list)
+                    if pop_up_result == 'Yes':
+
+                        # Remove
+                        delete_one_element_list(element_list)
+
+                        # # UPDATE APP
+
+                        # # Update contact info
+                        w_main.FindElement('contact_name').Update('')
+                        w_main.FindElement('contact_phone').Update('')
+                        w_main.FindElement('contact_celphone').Update('')
+                        w_main.FindElement('contact_sex').Update('')
+                        w_main.FindElement('contact_address').Update('')
+                        w_main.FindElement('contact_address_number').Update('')
+                        w_main.FindElement('contact_address_quarter').Update('')
+                        w_main.FindElement('contact_city').Update('')
+                        w_main.FindElement('contact_state').Update('')
+
+                        # # Update listbox
+                        w_main.FindElement('li_values').Update(get_name_in_file(path_file()))
+
+                        # update statistics
+                        list_len, m, f, n, m_percent, f_percent, n_percent = collect_statistics()
+                        w_main.FindElement('qtd_total').Update(list_len)
+                        w_main.FindElement('qtd_men').Update(m)
+                        w_main.FindElement('qtd_women').Update(f)
+                        w_main.FindElement('qtd_none').Update(n)
+                        w_main.FindElement('qtd_men_pct').Update(m_percent)
+                        w_main.FindElement('qtd_women_pct').Update(f_percent)
+                        w_main.FindElement('qtd_none_pct').Update(n_percent)
+
+                except IndexError:
+                    'list index out of range'
+                    popup_error_103(values)
+
             elif event == 'btn_delete_all':
                 popup_to_do(values)
             elif event == 'li_values':
                 if len(get_name_in_file(path_file())) > 0:
                     element_list = values['li_values'][0]
-                    name, telephone, celphone, sex, address, address_number, address_quarter, city, state = get_contact_list_info(element_list)
+                    name, telephone, celphone, sex, address, address_number, address_quarter, city, state = get_contact_list_info(
+                        element_list)
 
                     w_main.FindElement('contact_name').Update(name)
                     w_main.FindElement('contact_phone').Update(telephone)
@@ -78,19 +121,23 @@ def main():
                         elif values['sex_female']:
                             sex = 'Feminino'
                         elif values['sex_none']:
-                            sex = 'Nao definido'
+                            sex = 'Não definido'
 
                         # print(values)
 
-                        write_file(path_file(), name, telephone, celphone, sex, address, address_number, address_quarter, city, state)
+                        write_file(path_file(), name, telephone, celphone, sex, address, address_number,
+                                   address_quarter, city, state)
                         w_main.FindElement('li_values').Update(get_name_in_file(path_file()))
 
                         # update statistics
-                        list_len, m, f, n = collect_statistics()
+                        list_len, m, f, n, m_percent, f_percent, n_percent = collect_statistics()
                         w_main.FindElement('qtd_total').Update(list_len)
                         w_main.FindElement('qtd_men').Update(m)
                         w_main.FindElement('qtd_women').Update(f)
                         w_main.FindElement('qtd_none').Update(n)
+                        w_main.FindElement('qtd_men_pct').Update(m_percent)
+                        w_main.FindElement('qtd_women_pct').Update(f_percent)
+                        w_main.FindElement('qtd_none_pct').Update(n_percent)
 
                         popup_success_add_contact(values)
                         w_add_contact.close()

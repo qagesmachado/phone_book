@@ -18,14 +18,22 @@ def collect_statistics():
     f = 0
     m = 0
     n = 0
+    m_percent = 0
+    n_percent = 0
+    f_percent = 0
     for i in sex:
         if i == 'Feminino':
             f = f + 1
         elif i == 'Masculino':
             m = m + 1
-        elif i == 'Nao definido':
+        else:
             n = n + 1
-    return list_len, m, f, n
+    # percentage
+    if list_len > 0:
+        m_percent = round((m/list_len)*100, 3)
+        f_percent = round((f/list_len) * 100, 3)
+        n_percent = round((n/list_len) * 100, 3)
+    return list_len, m, f, n, m_percent, f_percent, n_percent
 
 
 if __name__ == '__main__':

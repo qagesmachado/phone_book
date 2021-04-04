@@ -7,7 +7,6 @@ font_size_title = 14
 font_size_text_name = 13
 font_size_text = 11
 
-
 # color
 # blue theme
 color_hard = '#5096ff'

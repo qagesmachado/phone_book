@@ -17,15 +17,15 @@ def write_file(file, name, telephone, celphone, sex, address, address_number, ad
 
 def path_file():
     path = get_root_path()
-    file = path + "/data/phone_book_list.txt"
-    # file = path + "/src/data/phone_book_list.txt"
+    file = path + "/data/phone_book_list.csv"
+    # file = path + "/src/data/phone_book_list.csv"
 
     return file
 
 
 def get_name_in_file(file):
     contact_list = []
-    with open(file, mode='r', encoding=encondig) as csv_file:
+    with open(file, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
         print(f'Names loaded:')
@@ -43,7 +43,7 @@ def get_name_in_file(file):
 def get_contact_list_info(element):
     file = path_file()
     if len(file) > 0:
-        with open(file, mode='r', encoding=encondig) as csv_file:
+        with open(file, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 if row["Nome"] == element:
@@ -74,7 +74,7 @@ def get_all_contact_list_info():
 
     file = path_file()
     if len(file) > 0:
-        with open(file, mode='r', encoding=encondig) as csv_file:
+        with open(file, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 name_list.append(row["Nome"])
@@ -95,7 +95,7 @@ def check_contact(name):
     print(name)
     name = strip_string(name)
     file = path_file()
-    with open(file, mode='r', encoding=encondig) as csv_file:
+    with open(file, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         for row in csv_reader:
             if row["Nome"] == name:
@@ -118,6 +118,31 @@ def strip_string(x):
         x = x.strip()
     return x
 
+
+def delete_one_element_list(element):
+    file = path_file()
+    if len(file) > 0:
+        lines = list()
+        with open(file, 'r', newline='') as readFile:
+            reader = csv.reader(readFile)
+            for row in reader:
+                lines.append(row)
+                # print(f' Esse é um row: {row}')
+                for field in row:
+                    if field == element:
+                        # print(f'Cliquei nesse elemento {field}')
+                        lines.remove(row)
+        # print(lines)
+        with open(file, 'w', newline='') as writeFile:
+            writer = csv.writer(writeFile)
+            writer.writerows(lines)
+
+
+def read_lines():
+    file = path_file()
+    read_file = open(file, 'r')
+    for line in read_file:
+        print(line)
 
 if __name__ == '__main__':
     write_file(path_file(), 'Giovani', 123645)
